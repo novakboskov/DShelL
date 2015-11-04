@@ -1,6 +1,6 @@
-# dsl
+# About
 
-A Clojure DSL designed to emit shell (bash or MS-DOS shell) code.
+DShelL is a Clojure DSL designed to emit shell (bash or MS-DOS shell) code.
 
 ## License
 
