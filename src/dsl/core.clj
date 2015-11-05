@@ -41,4 +41,4 @@
 (defmacro with-implementation
   [impl & body]
   `(binding [*current-implementation* ~impl]
-     ~@body)))
+     ~@body))
