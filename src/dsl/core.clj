@@ -1,49 +1,44 @@
 (ns dsl.core)
 
-(defmulti emit-bash
-  (fn [form]
-    (class form)))
+(derive ::bash ::common)
+(derive ::batch ::common)
 
-(defmethod emit-bash
-  clojure.lang.PersistentList
+(def ^:dynamic *current-implementation*
+  "The current script language implementation to generate"
+  ::common)
+
+(defmulti emit
+  (fn [form]
+    [*current-implementation* (class form)]))
+
+(defmethod emit [::common java.lang.String]
+  [form]
+  form)
+
+(defmethod emit [::common java.lang.Integer]
+  [form]
+  (str form))
+
+(defmethod emit [::common java.lang.Double]
+  [form]
+  (str form))
+
+(defmethod emit [::bash clojure.lang.PersistentList]
   [form]
   (case (name (first form))
     "println" (str "echo " (second form))
     nil))
 
-(defmethod emit-bash
-  java.lang.String
-  [string]
-  string)
-
-(defmethod emit-bash
-  java.lang.Integer
-  [integer]
-  (str integer))
-
-(defmethod emit-bash
-  java.lang.Double
-  [double]
-  (str double))
-
-(defmulti emit-batch
-  (fn [form]
-    (class form)))
-
-(defmethod emit-batch clojure.lang.PersistentList
-  [list]
-  (case (name (first list))
-    "println" (str "ECHO " (second list))
+(defmethod emit [::batch clojure.lang.PersistentList]
+  [form]
+  (case (name (first form))
+    "println" (str "ECHO " (second form))
     nil))
 
-(defmethod emit-batch java.lang.String
-  [string]
-  string)
+(defmacro script [form]
+  `(emit '~form))
 
-(defmethod emit-batch java.lang.Integer
-  [integer]
-  (str integer))
-
-(defmethod emit-batch java.lang.Double
-  [double]
-  (str double))
+(defmacro with-implementation
+  [impl & body]
+  `(binding [*current-implementation* ~impl]
+     ~@body)))
