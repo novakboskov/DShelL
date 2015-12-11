@@ -58,7 +58,9 @@
 ;; Interning functions in another namespaces
 
 ;; Problems:
-;; How to provide an option of changing implementation of make-a-function?
+;; - How to provide an option of changing implementation of make-a-function?
+;; - How to make dynamical generated functions available in development
+;; of generated or hand written kode?
 
 (defmacro make-a-function
   ([param1 param2 & body]
