@@ -42,3 +42,38 @@
   [impl & body]
   `(binding [*current-implementation* ~impl]
      ~@body))
+
+;;;; Macros for meta
+
+(with-implementation ::batch
+  (script
+   (println "HOME")))
+
+;;;;
+
+;;
+;; Testing concepts
+;;
+
+;; Interning functions in another namespaces
+
+;; Problems:
+;; How to provide an option of changing implementation of make-a-function?
+
+(defmacro make-a-function
+  ([param1 param2 & body]
+   `(fn [~param1 ~param2 ~body]
+      (println (+ 2 ~param1 ~param2))
+      ~@body))
+  ([param1 param2]
+   `(fn [~param1 ~param2]
+      (+ 2 ~param1 ~param2))))
+
+(create-ns 'app.models.foodstuffs)
+(binding [*ns* 'app.models.foodstuffs]
+  (intern 'app.models.foodstuffs 'some-foo (make-a-function p1 p2)))
+
+(app.models.foodstuffs/some-foo 2 4)
+
+;; Generating code in files
+(str (macroexpand '(make-a-function first-p second-p)))
